@@ -1,0 +1,5 @@
+{
+  "name": "TasCraft",
+  "description": "A high-performance, Minecraft-themed student task manager with blocky 3D aesthetics and Supabase integration.",
+  "requestFramePermissions": []
+}
