@@ -1,0 +1,14 @@
+name = "tascraft"
+type = "javascript"
+compatibility_date = "2026-02-16"
+
+[build]
+command = "npm run build"
+cwd = "./"
+
+[assets]
+directory = "dist"
+
+[[env.production.routes]]
+pattern = "example.com"
+zone_name = "example.com"
