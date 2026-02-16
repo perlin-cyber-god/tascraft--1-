@@ -52,13 +52,13 @@ export const MinecraftHeader: React.FC<MinecraftHeaderProps> = ({ level = 0, pro
           >
               <Box className="w-8 h-8 text-white group-active:scale-90 transition-transform" />
           </div>
-          <span className="text-3xl text-white tracking-widest uppercase text-shadow hidden md:block">TasCraft</span>
+          <span className="text-2xl font-bold text-[#ffaa00] tracking-wider uppercase text-shadow hidden md:block">TasCraft</span>
         </div>
 
         {/* XP Bar Section */}
         <div className="flex-grow max-w-2xl mx-4 flex flex-col items-center justify-center relative -mt-1">
            {/* Level Number */}
-           <div className="text-[#80ff20] text-3xl mb-0.5 text-shadow-lg font-bold drop-shadow-[0_2px_0_rgba(0,0,0,1)] relative z-10 font-pixel">
+           <div className="text-[#80ff20] text-2xl mb-0.5 text-shadow-lg font-bold drop-shadow-[0_2px_0_rgba(0,0,0,1)] relative z-10 font-pixel">
               {level}
            </div>
            
@@ -93,7 +93,7 @@ export const MinecraftHeader: React.FC<MinecraftHeaderProps> = ({ level = 0, pro
 
            <div className="hidden lg:flex items-center gap-2 px-4 py-2 bg-black/40 border-2 border-white/10 text-mc-stoneLight rounded-sm">
               <User className="w-5 h-5" />
-              <span className="text-lg tracking-wide">{user?.username}</span>
+              <span className="text-base font-bold text-[#ffaa00] tracking-wide">{user?.username}</span>
            </div>
            
            <button

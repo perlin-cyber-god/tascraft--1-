@@ -58,7 +58,7 @@ export const BookshelfTopbar: React.FC<BookshelfTopbarProps> = ({
         
         {/* Label & Add Button */}
         <div className="flex flex-col gap-2 mr-4 shrink-0">
-            <h2 className="text-[#a0a0a0] text-sm uppercase tracking-wide flex items-center gap-2">
+            <h2 className="text-[#ffaa00] text-xs font-bold uppercase tracking-wider flex items-center gap-2">
                 <Library className="w-4 h-4"/> Subjects
             </h2>
             <button 
