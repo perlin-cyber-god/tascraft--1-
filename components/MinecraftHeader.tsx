@@ -1,7 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Box, User, Globe } from 'lucide-react';
-import { BossBar } from './ui/BossBar';
+import { LogOut, Box, User, Globe, Flame } from 'lucide-react';
 
 interface MinecraftHeaderProps {
   level?: number;
@@ -32,17 +31,6 @@ export const MinecraftHeader: React.FC<MinecraftHeaderProps> = ({ level = 0, pro
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#222]/95 border-b-4 border-mc-stoneDark shadow-pixel-sm font-pixel transition-all duration-300 backdrop-blur-sm">
       
-      {/* Boss Bar Container (Always Visible if active) */}
-      {bossBarConfig && bossBarConfig.max > 0 && (
-          <div className="w-full pt-2 px-4 pb-0 bg-gradient-to-b from-black/50 to-transparent">
-              <BossBar 
-                label={bossBarConfig.label} 
-                current={bossBarConfig.current} 
-                max={bossBarConfig.max} 
-              />
-          </div>
-      )}
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center justify-between gap-4 h-20">
         
         {/* Brand */}
@@ -91,9 +79,17 @@ export const MinecraftHeader: React.FC<MinecraftHeaderProps> = ({ level = 0, pro
               <span className="hidden lg:inline">Global</span>
            </button>
 
-           <div className="hidden lg:flex items-center gap-2 px-4 py-2 bg-black/40 border-2 border-white/10 text-mc-stoneLight rounded-sm">
+           <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-black/40 border-2 border-white/10 text-mc-stoneLight rounded-sm">
               <User className="w-5 h-5" />
               <span className="text-base font-bold text-[#ffaa00] tracking-wide">{user?.username}</span>
+              
+              {/* Compact Weekly Objectives Indicator */}
+              {bossBarConfig && bossBarConfig.max > 0 && (
+                <div className="flex items-center gap-1 ml-2 pl-2 border-l border-white/20">
+                  <Flame className="w-4 h-4 text-[#ff5555]" />
+                  <span className="text-xs text-[#ffaa00]">{bossBarConfig.max - bossBarConfig.current}/{bossBarConfig.max}</span>
+                </div>
+              )}
            </div>
            
            <button
