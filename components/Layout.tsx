@@ -2,7 +2,6 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { CustomCursor } from './ui/CustomCursor';
 import { WeatherEffects } from './ui/WeatherEffects';
-import { MinecraftHeader } from './MinecraftHeader';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -18,9 +17,6 @@ export const Layout: React.FC<LayoutProps> = ({ children, weather = 'snow', leve
       <CustomCursor />
       
       <WeatherEffects effectType={weather} particleCount={80} />
-
-      {/* Header (Fixed Top) */}
-      <MinecraftHeader level={level} progress={progress} />
 
       {/* Content Area */}
       <div className="flex flex-col flex-1 pt-24 overflow-hidden relative z-10">
