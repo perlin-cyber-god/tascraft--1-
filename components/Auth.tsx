@@ -10,7 +10,6 @@ import { CustomCursor } from './ui/CustomCursor';
 export const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
@@ -33,13 +32,11 @@ export const Auth: React.FC = () => {
 
     try {
         if (isLogin) {
-          await signIn(username, password);
+          await signIn(username);
         } else {
-          await signUp(username, password);
+          await signUp(username);
           if (isSupabaseConfigured) {
-             // If email confirmation is off in Supabase, this will log them in immediately.
-             // If on, they might see an alert.
-             alert('Account created! Attempting to log in...');
+             alert('Profile created! You can now play.');
           }
         }
     } catch (err: any) {
@@ -92,20 +89,6 @@ export const Auth: React.FC = () => {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-mc-stoneLight uppercase text-lg">Password</label>
-            <div className="relative">
-                <input
-                type="password"
-                placeholder="••••••••"
-                className="w-full bg-black border-2 border-mc-stoneLight p-3 pl-4 text-white placeholder-gray-600 focus:outline-none focus:border-mc-green focus:bg-[#111] transition-colors font-pixel text-xl"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                />
-            </div>
-          </div>
-
           {error && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -125,7 +108,7 @@ export const Auth: React.FC = () => {
           >
             {loading ? 'Connecting to Server...' : (
                 <>
-                    {isLogin ? 'Join Server' : 'Register'}
+                    {isLogin ? 'Join Server' : 'Create Profile'}
                 </>
             )}
           </motion.button>

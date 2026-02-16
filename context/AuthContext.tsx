@@ -5,106 +5,129 @@ import { User } from '../types';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signIn: (username: string, password: string) => Promise<void>;
+  signIn: (username: string) => Promise<void>;
   signOut: () => Promise<void>;
-  signUp: (username: string, password: string) => Promise<void>;
+  signUp: (username: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Helper to generate a fake email from username
-const getEmailFromUsername = (username: string) => `${username.toLowerCase().replace(/\s/g, '')}@tascraft.game`;
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const formatUser = (sessionUser: any): User | null => {
-    if (!sessionUser) return null;
-    return {
-        id: sessionUser.id,
-        email: sessionUser.email,
-        // Fallback to email prefix if metadata is missing
-        username: sessionUser.user_metadata?.username || sessionUser.email?.split('@')[0] || 'Steve' 
-    };
-  };
-
   useEffect(() => {
-    if (isSupabaseConfigured && supabase) {
-      // Check active sessions and sets the user
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        setUser(formatUser(session?.user));
-        setLoading(false);
-      });
-
-      // Listen for changes on auth state
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-        setUser(formatUser(session?.user));
-        setLoading(false);
-      });
-
-      return () => subscription.unsubscribe();
-    } else {
-      // Mock Auth for Demo Mode
-      const storedUser = localStorage.getItem('nebula_user');
-      if (storedUser) {
+    // Just check localStorage - no Supabase auth calls
+    const storedUser = localStorage.getItem('tascraft_user');
+    if (storedUser) {
+      try {
         setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error('Failed to parse stored user:', e);
       }
-      setLoading(false);
     }
+    setLoading(false);
   }, []);
 
-  const signIn = async (username: string, password: string) => { // Removed email param
+  const signIn = async (username: string) => {
+    // Check if profile exists in database
     if (isSupabaseConfigured && supabase) {
-      const email = getEmailFromUsername(username);
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password, 
-      });
-      if (error) {
-        // Customize error message for better UX since user doesn't know about the email trick
-        if (error.message.includes('Invalid login credentials')) {
-            throw new Error('Incorrect username or password');
+      try {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('username', username)
+          .single();
+
+        if (error || !profile) {
+          throw new Error('Username not found. Create a profile first.');
         }
-        throw error;
+
+        // User found - log them in
+        const user: User = {
+          id: profile.id,
+          username: profile.username,
+          email: `${username}@tascraft.local`
+        };
+        
+        localStorage.setItem('tascraft_user', JSON.stringify(user));
+        setUser(user);
+        return;
+      } catch (err: any) {
+        console.warn('Supabase login failed, trying localStorage fallback:', err);
       }
-    } else {
-      // Mock Sign In
-      if (password !== 'password') {
-          // console.log("Demo mode: use 'password'"); // Optional hint
-      }
-      const mockUser = { id: 'demo-user-123', username, email: 'demo@demo.com' };
-      localStorage.setItem('nebula_user', JSON.stringify(mockUser));
-      setUser(mockUser);
     }
+    
+    // Fallback: check localStorage for profiles
+    const profiles = JSON.parse(localStorage.getItem('tascraft_profiles') || '[]');
+    const profile = profiles.find((p: any) => p.username === username);
+    
+    if (!profile) {
+      throw new Error('Username not found. Create a profile first.');
+    }
+
+    const user: User = {
+      id: profile.id,
+      username: profile.username,
+      email: `${username}@tascraft.local`
+    };
+    
+    localStorage.setItem('tascraft_user', JSON.stringify(user));
+    setUser(user);
   };
   
-  const signUp = async (username: string, password: string) => {
-     if (isSupabaseConfigured && supabase) {
-        const email = getEmailFromUsername(username);
-        
-        const { error } = await supabase.auth.signUp({ 
-            email, 
-            password,
-            options: {
-                data: {
-                    username: username // Store pure username in metadata
-                }
-            }
-        });
-        if (error) throw error;
-     } else {
-         await signIn(username, password);
-     }
-  }
+  const signUp = async (username: string) => {
+    // Check if username already exists
+    const profiles = JSON.parse(localStorage.getItem('tascraft_profiles') || '[]');
+    if (profiles.some((p: any) => p.username === username)) {
+      throw new Error('Username already taken!');
+    }
+
+    // Create new profile locally
+    const newProfile = {
+      id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      username: username,
+      created_at: new Date().toISOString()
+    };
+
+    profiles.push(newProfile);
+    localStorage.setItem('tascraft_profiles', JSON.stringify(profiles));
+
+    // Try to also sync to Supabase if available
+    if (isSupabaseConfigured && supabase) {
+      try {
+        // Just create the profile in the database, don't use auth
+        await supabase.from('profiles').insert([{
+          id: newProfile.id,
+          username: newProfile.username,
+          created_at: newProfile.created_at
+        }]);
+      } catch (err) {
+        console.warn('Could not sync profile to Supabase, continuing with localStorage:', err);
+      }
+    }
+
+    // Log them in
+    const user: User = {
+      id: newProfile.id,
+      username: newProfile.username,
+      email: `${username}@tascraft.local`
+    };
+    
+    localStorage.setItem('tascraft_user', JSON.stringify(user));
+    setUser(user);
+  };
 
   const signOut = async () => {
     if (isSupabaseConfigured && supabase) {
-      await supabase.auth.signOut();
-    } else {
-      localStorage.removeItem('nebula_user');
-      setUser(null);
+      try {
+        await supabase.auth.signOut();
+      } catch (err) {
+        console.warn('Supabase signOut failed:', err);
+      }
     }
+    localStorage.removeItem('tascraft_user');
+    setUser(null);
   };
 
   return (

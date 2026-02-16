@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TasCraft - Block Manager</title>
+    <!-- Tailwind CSS CDN - Warning is safe to ignore for development/small projects -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -11,7 +12,7 @@
           extend: {
             colors: {
               mc: {
-                bg: "#0a0a0a", // Deeper black
+                bg: "#0a0a0a",
                 stone: "#3b3b3b",
                 stoneLight: "#757575",
                 stoneDark: "#1a1a1a",
@@ -19,7 +20,7 @@
                 dirtDark: "#382818",
                 grass: "#5b8731",
                 grassSide: "#4a6b28",
-                diamond: "#3c8527", 
+                diamond: "#3c8527",
                 diamondLight: "#5b8731",
                 accent: "#6a4c93",
                 red: "#aa0000",
@@ -28,8 +29,7 @@
               }
             },
             fontFamily: {
-              pixel: ['"VT323"', 'monospace'],
-              sans: ['"VT323"', 'monospace'],
+              pixel: ['"Press Start 2P"', 'monospace'],
             },
             boxShadow: {
               'pixel': '4px 4px 0px 0px rgba(0,0,0,0.8)',
@@ -39,9 +39,6 @@
               '3d-sm': '4px 4px 0px 0px rgba(0,0,0,0.6)',
               'inner-3d': 'inset 4px 4px 0px 0px rgba(0,0,0,0.5)',
             },
-            backgroundImage: {
-              'dirt-pattern': "url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzjwqkAChmVBgYzq1asZGRgAq+cWbS41s68AAAAASUVORK5CYII=')",
-            },
             animation: {
               'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             }
@@ -49,17 +46,16 @@
         },
       }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
       body {
-        font-family: 'VT323', monospace;
+        font-family: 'Press Start 2P', monospace;
         background: #050505;
         image-rendering: pixelated;
         overflow-x: hidden;
-        cursor: none; /* Hide default cursor */
+        cursor: none;
       }
       
-      /* Custom scrollbar */
       ::-webkit-scrollbar {
         width: 14px;
         background: #1a1a1a;
